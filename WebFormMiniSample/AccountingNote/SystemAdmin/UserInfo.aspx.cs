@@ -23,25 +23,23 @@ namespace AccountingNote.SystemAdmin
                     return;
                 }
 
-                string account = this.Session["UserLoginInfo"] as string;
-            DataRow dr = UserInfoManager.GetUserInfoByAccount(account);
+                var currentUser = AuthManager.GetCurrentUser();
 
-            if(dr ==null)       // 如果帳號不存在，導至登入頁
+            if(currentUser == null)       // 如果帳號不存在，導至登入頁
             {
-                    this.Session["UserLoginInfo"] = null;
                     Response.Redirect("/Login.aspx");
                     return;
             }
 
-                this.ltAccount.Text = dr["Account"].ToString();
-                this.ltName.Text = dr["Name"].ToString();
-                this.ltEmail.Text = dr["Email"].ToString();
+                this.ltAccount.Text = currentUser.Account;
+                this.ltName.Text = currentUser.Name;
+                this.ltEmail.Text = currentUser.Email;
         }
       }
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
-            this.Session["UserLoginInfo"] = null;    //清除登入資訊，導至燈入夜
+            AuthManager.Logout();   //清除登入資訊，並導至登入頁
             Response.Redirect("/Login.aspx");
         }
     }

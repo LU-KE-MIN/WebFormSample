@@ -58,7 +58,7 @@ namespace AccountNote.DBSources
                 }
             }
         }
-        public static void ModifyDate(string connStr, string dbCommand, List<SqlParameter> paramList)
+        public static int ModifyDate(string connStr, string dbCommand, List<SqlParameter> paramList)
         {
             // connect db & execute
             using (SqlConnection connection = new SqlConnection(connStr))
@@ -67,7 +67,8 @@ namespace AccountNote.DBSources
                 {
                     command.Parameters.AddRange(paramList.ToArray());
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    int effectRowsCount = command.ExecuteNonQuery();
+                    return effectRowsCount;
                 }
             }
         }

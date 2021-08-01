@@ -121,6 +121,14 @@ namespace AccountNote.DBSources
                 return null;
             }
         }
+        /// <summary> 變更流水帳</summary>
+        /// <param name="id"></param>
+        /// <param name="userID"></param>
+        /// <param name="caption"></param>
+        /// <param name="amount"></param>
+        /// <param name="actType"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
         public static bool UpdateAccounting(int id, string userID, string caption, int amount, int actType, string body)
         {
             if (amount < 0 || amount > 1000000)
@@ -142,40 +150,31 @@ namespace AccountNote.DBSources
                       
                  WHERE
                       ID = @id";
+            List<SqlParameter> paramList = new List<SqlParameter>();
+            paramList.Add(new SqlParameter("@id", id));
+            paramList.Add(new SqlParameter("@userID", userID));
+            paramList.Add(new SqlParameter("@caption", caption));
+            paramList.Add(new SqlParameter("@amount", amount));
+            paramList.Add(new SqlParameter("@actType", actType));
+            paramList.Add(new SqlParameter("@crateDate", DateTime.Now));
+            paramList.Add(new SqlParameter("@body", body));
 
-            using (SqlConnection connection = new SqlConnection(connStr))
+            try
             {
-                using (SqlCommand command = new SqlCommand(dbCommand, connection))
-                {
-                    command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@userID", userID);
-                    command.Parameters.AddWithValue("@caption", caption);
-                    command.Parameters.AddWithValue("@amount", amount);
-                    command.Parameters.AddWithValue("@actType", actType);
-                    command.Parameters.AddWithValue("@crateDate", DateTime.Now);
-                    command.Parameters.AddWithValue("@body", body);
+                int effectRows = DBHelper.ModifyDate(connStr, dbCommand, paramList);
 
-                    try
-                    {
-                        connection.Open();
-                        int effectRow = command.ExecuteNonQuery();
-                        if (effectRow == 1)
-                        {
-                            return true;
-                        }
-                        else
-                            return false;
-
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.WriteLog(ex);
-                        return false;
-                    }
-                }
+                if (effectRows == 1)
+                    return true;
+                else
+                    return false;
             }
-
+            catch (Exception ex)
+            {
+                Logger.WriteLog(ex);
+                return false;
+            }
         }
+
         public static void DeleteAccounting(int ID)
         {
             string connStr = DBHelper.GetConnectionString();

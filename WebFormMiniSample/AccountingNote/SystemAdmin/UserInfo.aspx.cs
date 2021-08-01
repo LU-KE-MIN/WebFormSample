@@ -1,4 +1,5 @@
-﻿using AccountNote.DBSources;
+﻿using AccountingNote.Auth;
+using AccountNote.DBSources;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,14 +15,15 @@ namespace AccountingNote.SystemAdmin
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!this.IsPostBack)  // 可能是按鈕跳回本頁，所以要判斷POSTBACK
-            {  
-            if(this.Session["UserLoginInfo"] == null)
             {
-                Response.Redirect("/Login.aspx");
-                return;
-            }
+                //check is logined
+                if (!AuthManager.IsLogined())
+                {
+                    Response.Redirect("/Login.aspx");
+                    return;
+                }
 
-            string account = this.Session["UserLoginInfo"] as string;
+                string account = this.Session["UserLoginInfo"] as string;
             DataRow dr = UserInfoManager.GetUserInfoByAccount(account);
 
             if(dr ==null)       // 如果帳號不存在，導至登入頁

@@ -58,5 +58,18 @@ namespace AccountNote.DBSources
                 }
             }
         }
+        public static void ModifyDate(string connStr, string dbCommand, List<SqlParameter> paramList)
+        {
+            // connect db & execute
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                using (SqlCommand command = new SqlCommand(dbCommand, connection))
+                {
+                    command.Parameters.AddRange(paramList.ToArray());
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

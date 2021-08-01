@@ -38,13 +38,13 @@ namespace AccountNote.DBSources
                 Logger.WriteLog(ex);
                 return null;
             }
-    }
-        public static void  CreateAccouting(string userID, string caption, int amount, int actType, string body)
+        }
+        public static void CreateAccouting(string userID, string caption, int amount, int actType, string body)
         {
             if (amount < 0 || amount > 1000000)
                 throw new ArgumentException("Amount must between 0 and 1,000,000.");
 
-            if(actType<0 || actType>1)
+            if (actType < 0 || actType > 1)
                 throw new ArgumentException("ActType must be 0 or 1.");
             //<<<<< check input >>>>>
             string connStr = DBHelper.GetConnectionString();
@@ -82,12 +82,12 @@ namespace AccountNote.DBSources
                     {
                         connection.Open();
                         command.ExecuteNonQuery();
-                        
+
                     }
                     catch (Exception ex)
                     {
                         Logger.WriteLog(ex);
-                        
+
                     }
                 }
             }
@@ -121,10 +121,7 @@ namespace AccountNote.DBSources
                 return null;
             }
         }
-
-
-
-        public static bool UpdateAccounting(int id,string userID, string caption, int amount, int actType, string body)
+        public static bool UpdateAccounting(int id, string userID, string caption, int amount, int actType, string body)
         {
             if (amount < 0 || amount > 1000000)
                 throw new ArgumentException("Amount must between 0 and 1,000,000.");
@@ -161,7 +158,7 @@ namespace AccountNote.DBSources
                     try
                     {
                         connection.Open();
-                        int effectRow=command.ExecuteNonQuery();
+                        int effectRow = command.ExecuteNonQuery();
                         if (effectRow == 1)
                         {
                             return true;
@@ -186,23 +183,17 @@ namespace AccountNote.DBSources
                 $@"DELETE [dbo].[Accounting]             
                        WHERE ID = @id";
 
-            using (SqlConnection connection = new SqlConnection(connStr))
-            {
-                using (SqlCommand command = new SqlCommand(dbCommand, connection))
-                {
-                    command.Parameters.AddWithValue("@id", ID);
-                    try
-                    {
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.WriteLog(ex);   
-                    }
-                }
-            }
+            List<SqlParameter> paramList = new List<SqlParameter>();
+            paramList.Add(new SqlParameter("@id", ID));
 
+            try
+            {
+                DBHelper.ModifyDate(connStr, dbCommand, paramList);
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLog(ex);
+            }
         }
     }
 }
